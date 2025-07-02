@@ -4,5 +4,4 @@ app/routes/__pycache__
 app/models/__pycache__
 app/sockets/__pycache__
 migrations
-venv
 
