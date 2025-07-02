@@ -24,8 +24,8 @@ Une plateforme de streaming éducatif permettant aux professeurs de diffuser des
 
 ```bash
 git clone https://github.com/Uriel-Ondo/tnt_agricole.git
-cd tele_education
-git checkout api
+cd tnt_agricole
+git checkout main
 ```
 
 ### b. Configurer l’environnement virtuel Python
@@ -47,8 +47,8 @@ pip install -r requirements.txt
 1. Créez la base de données :
 
 ```bash
-mysql -u nospi -p
-CREATE DATABASE education;
+mysql -u admin -p
+CREATE DATABASE agro;
 exit
 ```
 
@@ -81,7 +81,7 @@ Exemple de contenu :
 ```env
 FLASK_ENV=development
 SECRET_KEY=your-secret-key-here
-DATABASE_URL=mysql+pymysql://admin:passer@localhost/education
+DATABASE_URL=mysql+pymysql://admin:passer@localhost/agro
 REDIS_URL=redis://localhost:6379/0
 JWT_SECRET_KEY=your-jwt-secret-key-here
 ```
