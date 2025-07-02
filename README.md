@@ -1,154 +1,181 @@
-Télé-Éducation Platform
-Une plateforme de streaming éducatif permettant aux professeurs de diffuser des cours en direct via WebRTC et aux spectateurs de les visionner en HLS, avec des fonctionnalités interactives comme des quiz et des commentaires.
-Prérequis
 
-Système : Linux (testé sur Ubuntu)
-Logiciels :
-Python 3.12
-Node.js (pour Tailwind CSS, optionnel)
-Redis
-MySQL
-SRS (Simple Realtime Server) pour WebRTC et HLS
+# Télé-Éducation Platform
 
+Une plateforme de streaming éducatif permettant aux professeurs de diffuser des cours en direct via WebRTC et aux spectateurs de les visionner en HLS, avec des fonctionnalités interactives : quiz & commentaires.
 
-Navigateurs : Chrome, Firefox, ou Safari (pour HLS)
+---
 
-- Installation
+## Prérequis
 
-    Cloner le dépôt :
-    git clone https://github.com/nospi510/tele_education.git
-    cd tele_education
-    git checkout api
+- **Système** : Linux (testé sur Ubuntu)
+- **Logiciels** :
+  - Python 3.12
+  - Node.js (pour Tailwind CSS, optionnel)
+  - Redis
+  - MySQL
+  - SRS (Simple Realtime Server) pour WebRTC et HLS
+- **Navigateurs** : Chrome, Firefox ou Safari (pour HLS)
 
+---
 
-- Configurer l'environnement virtuel :
-    cd backend
-    python -m venv .venv
-    source .venv/bin/activate
+## 1. Installation
 
+### a. Cloner le dépôt
 
-- Installer les dépendances Python :
-    pip install -r requirements.txt
+```bash
+git clone https://github.com/Uriel-Ondo/tnt_agricole.git
+cd tele_education
+git checkout api
+```
 
+### b. Configurer l’environnement virtuel Python
 
-- Configurer MySQL :
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+```
 
-    Créez la base de données education :mysql -u nospi -p
-    CREATE DATABASE education;
-    exit
+### c. Installer les dépendances Python
 
+```bash
+pip install -r requirements.txt
+```
 
+### d. Configurer MySQL
 
+1. Créez la base de données :
 
-- Configurer Redis :
+```bash
+mysql -u nospi -p
+CREATE DATABASE education;
+exit
+```
 
-    Installez Redis :sudo apt install redis-server
-    Lancez Redis :sudo systemctl start redis
+2. (Adaptez l’utilisateur/mot de passe selon votre config)
 
+### e. Configurer Redis
 
+1. Installer Redis :
 
+```bash
+sudo apt install redis-server
+```
 
-- Configurer les variables d'environnement :
+2. Lancer Redis :
 
-    Créez un fichier .env dans backend/ :touch backend/.env
+```bash
+sudo systemctl start redis
+```
 
-    FLASK_ENV=development
-    SECRET_KEY=your-secret-key-here
-    DATABASE_URL=mysql+pymysql://nospi:passer@localhost/education
-    REDIS_URL=redis://localhost:6379/0
-    JWT_SECRET_KEY=your-jwt-secret-key-here
+### f. Configurer les variables d’environnement
 
+Créer un fichier `.env` dans `backend/` :
 
+```bash
+touch backend/.env
+```
 
+Exemple de contenu :
 
-- Migrations de la base de données
+```env
+FLASK_ENV=development
+SECRET_KEY=your-secret-key-here
+DATABASE_URL=mysql+pymysql://admin:passer@localhost/education
+REDIS_URL=redis://localhost:6379/0
+JWT_SECRET_KEY=your-jwt-secret-key-here
+```
 
-    cd backend
-    source .venv/bin/activate
-    flask db init
+---
 
+## 2. Migrations de la base de données
 
-    Créer les migrations :
-    flask db migrate -m "Initial migration"
+```bash
+cd backend
+source .venv/bin/activate
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
+```
 
+---
 
-    Appliquer les migrations :
-    flask db upgrade
+## 3. Lancement de l’application
 
+### a. Lancer SRS
 
-
-
-**Lancement de l'application**
-
-**Lancer SRS :**
+```bash
 sudo /usr/local/srs/objs/srs -c /usr/local/srs/conf/srs.conf
+```
 
+Vérifier que les ports sont ouverts :
 
-Vérifiez les ports :lsof -i :1935,1985,8080,8000
+```bash
+lsof -i :1935,1985,8080,8000
+```
 
+### b. Lancer Flask
 
-
-
-**Lancer Flask :**
+```bash
 source .venv/bin/activate
 cd backend
 python run.py
+```
 
+---
 
-Accéder à l'application :
+## 4. Accéder à l’application
 
+### a. Création de comptes et connexion
 
-- Création de comptes  et connexion 
-    Acceder a : http://localhost:5001/apidocs
-    et dans l'option register creer deux utilisateurs, un avec le rle professor et l'autre avec le role viewer
+- Documentation API : [http://localhost:5001/apidocs](http://localhost:5001/apidocs)
+- Dans l’option `register`, créez deux utilisateurs : un avec le rôle `professor`, l’autre avec le rôle `viewer`.
 
-    Ensuite aller sur l'interface web : http://localhost:5001/auth/login 
-    Connectez-vous avec :
-    Professeur : prof@visiotech.me / motdepasse
-    Spectateur : viewer@visiotech.me / motdepasse
+### b. Connexion via interface web
 
+- Professeur : [http://localhost:5001/auth/login](http://localhost:5001/auth/login)
+  - Utilisez : **prof@visiotech.me / motdepasse**
+- Spectateur :
+  - Utilisez : **viewer@visiotech.me / motdepasse**
 
+---
 
+## 5. Utilisation
 
+### Professeur
 
-- Utilisation
+- Créez une session sur `/sessions/create`
+- Accédez à `/sessions/professor?session_id=` pour diffuser en WebRTC
+- Lancez le streaming, créez des quiz
 
-    - Professeur :
+### Spectateur
 
-        Créez une session sur /sessions/create.
-        Accédez à /sessions/professor?session_id=<id> pour diffuser via WebRTC.
-        Lancez le streaming, créez des quiz.
+- Sélectionnez une session via `/sessions/active`
+- Visionnez le flux HLS via `/sessions/viewer?session_id=`
+- Participez aux quiz
 
+---
 
-    - Spectateur :
+## 6. Dépannage
 
-        Sélectionnez une session sur /sessions/active.
-        Visionnez le flux HLS sur /sessions/viewer?session_id=<id>.
-        Participez aux quiz.
+| Problème | Solution |
+|----------|----------|
+| **Erreur Socket.IO**<br> (ConnectionRefusedError: Missing token) | Vérifiez que `jwt_token` est dans le localStorage (console navigateur). Assurez-vous que `.env` contient bien `JWT_SECRET_KEY`. |
+| **Flux vidéo absent** | Testez l’URL HLS dans VLC : `http://localhost:8080/hls/live/session_<id>.m3u8`.<br> Consultez `/usr/local/srs/logs/srs.log`. |
+| **Base de données** | Vérifiez la variable `DATABASE_URL` dans `.env`. Réexécutez `flask db upgrade` si nécessaire. |
+| **Redis** | Vérifiez que Redis fonctionne : `redis-cli ping` doit répondre `PONG`. |
 
+---
 
+## 7. Ressources
 
-Dépannage
+- [SRS (Simple Realtime Server)](https://ossrs.io/lts/zh-cn/docs/v5/doc/getting-started)
+- [WebRTC - MDN](https://developer.mozilla.org/fr/docs/Web/API/WebRTC_API)
+- [HLS Streaming Overview](https://developer.apple.com/documentation/http_live_streaming)
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [Socket.IO Documentation](https://socket.io/docs/)
 
-Erreur Socket.IO (ConnectionRefusedError: Missing token) :
-Vérifiez que jwt_token est dans localStorage (console du navigateur).
-Assurez-vous que .env contient JWT_SECRET_KEY.
+---
 
-
-Flux vidéo absent :
-Testez l'URL HLS dans VLC : http://localhost:8080/hls/live/session_<id>.m3u8.
-Consultez /usr/local/srs/logs/srs.log.
-
-
-Base de données :
-Vérifiez DATABASE_URL dans .env.
-Réexécutez flask db upgrade si nécessaire.
-
-
-Redis :
-Vérifiez que Redis est en cours d'exécution :redis-cli ping
-
-
-
-
-
+**Besoin d’aide ou d’ajout de fonctionnalités (quiz, chat, modération…) ? Demande-moi !**
+````
