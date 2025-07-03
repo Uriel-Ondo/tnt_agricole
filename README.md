@@ -177,5 +177,3 @@ python run.py
 
 ---
 
-**Besoin d’aide ou d’ajout de fonctionnalités (quiz, chat, modération…) ? Demande-moi !**
-````
