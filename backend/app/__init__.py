@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
@@ -14,6 +14,10 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__, template_folder='templates')
     app.config.from_object(Config)
+    
+    @app.route('/')
+    def root():
+        return redirect(url_for('auth.login_page'))
 
     # Initialisation des extensions
     db.init_app(app)

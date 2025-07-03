@@ -1,26 +1,50 @@
 {% extends "base.html" %}
 {% block title %}Interface Expert{% endblock %}
 {% block content %}
-<div class="bg-white p-8 rounded shadow-md w-full">
-    <h1 class="text-2xl font-bold mb-4">Interface Expert - Session {{ session_id }}</h1>
-    <div class="mb-4">
-        <video id="local-video" autoplay muted class="w-1/2 mb-4"></video>
-        <button id="start-stream" class="bg-blue-500 text-white px-4 py-2 rounded">Démarrer le streaming</button>
-        <button id="stop-stream" class="bg-red-500 text-white px-4 py-2 rounded hidden">Arrêter le streaming</button>
+<div class="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl mx-auto mt-12">
+    <h1 class="text-2xl font-bold mb-6 text-center text-green-800">Interface Expert - Session {{ session_id }}</h1>
+    
+    <div class="mb-8">
+        <div class="flex justify-center">
+            <video id="local-video" autoplay muted class="w-full max-w-lg rounded-lg shadow-md mb-4"></video>
+        </div>
+        <div class="flex justify-center space-x-4">
+            <button id="start-stream" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 transform hover:-translate-y-1">Démarrer le streaming</button>
+            <button id="stop-stream" class="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-medium transition-all duration-200 transform hover:-translate-y-1 hidden">Arrêter le streaming</button>
+        </div>
     </div>
-    <div class="mb-4">
-        <h2 class="text-xl font-semibold">Créer un quiz</h2>
-        <input id="quiz-question" type="text" placeholder="Question" class="border p-2 w-full mb-2">
-        <input id="quiz-options" type="text" placeholder="Options (séparées par des virgules)" class="border p-2 w-full mb-2">
-        <input id="quiz-correct" type="text" placeholder="Réponse correcte" class="border p-2 w-full mb-2">
-        <button id="create-quiz" class="bg-green-500 text-white px-4 py-2 rounded">Créer le quiz</button>
+    
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4 text-green-800">Créer un quiz</h2>
+        <form id="quiz-form">
+            <div class="mb-4">
+                <label for="quiz-question" class="block text-sm font-medium text-gray-700">Question</label>
+                <input id="quiz-question" type="text" class="mt-1 border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200" placeholder="Question">
+            </div>
+            <div class="mb-4">
+                <label for="quiz-options" class="block text-sm font-medium text-gray-700">Options (séparées par des virgules)</label>
+                <input id="quiz-options" type="text" class="mt-1 border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200" placeholder="Option 1, Option 2, Option 3">
+            </div>
+            <div class="mb-6">
+                <label for="quiz-correct" class="block text-sm font-medium text-gray-700">Réponse correcte</label>
+                <input id="quiz-correct" type="text" class="mt-1 border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200" placeholder="Réponse correcte">
+            </div>
+            <button id="create-quiz" type="button" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg w-full font-medium transition-all duration-200 transform hover:-translate-y-1">Créer le quiz</button>
+        </form>
     </div>
-    <div id="quiz-responses" class="mb-4"></div>
-    <div id="comments" class="mb-4">
-        <h2 class="text-xl font-semibold">Commentaires</h2>
-        <ul id="comment-list" class="list-disc pl-5"></ul>
-        <input id="comment-input" type="text" placeholder="Ajouter un commentaire" class="border p-2 w-full mb-2">
-        <button id="post-comment" class="bg-blue-500 text-white px-4 py-2 rounded">Envoyer</button>
+    
+    <div id="quiz-responses" class="mb-8">
+        <h2 class="text-xl font-semibold mb-4 text-green-800">Réponses au quiz</h2>
+        <div class="space-y-2"></div>
+    </div>
+    
+    <div id="comments" class="mb-8">
+        <h2 class="text-xl font-semibold mb-4 text-green-800">Commentaires</h2>
+        <ul id="comment-list" class="list-disc pl-5 space-y-2"></ul>
+        <div class="mt-4">
+            <input id="comment-input" type="text" class="border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200 mb-2" placeholder="Ajouter un commentaire">
+            <button id="post-comment" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg w-full font-medium transition-all duration-200 transform hover:-translate-y-1">Envoyer</button>
+        </div>
     </div>
 </div>
 
@@ -69,14 +93,15 @@
     });
 
     socket.on("quiz_response", (data) => {
-        const responsesDiv = document.getElementById("quiz-responses");
-        responsesDiv.innerHTML += `<p>${data.user_name}: ${data.answer} (${data.submitted_at})</p>`;
+        const responsesDiv = document.getElementById("quiz-responses").querySelector("div");
+        responsesDiv.innerHTML += `<p class="text-gray-700">${data.user_name}: ${data.answer} (${data.submitted_at})</p>`;
     });
 
     socket.on("new_comment", (data) => {
         const commentList = document.getElementById("comment-list");
         const li = document.createElement("li");
         li.textContent = `${data.user_name}: ${data.content} (${data.created_at})`;
+        li.classList.add("text-gray-700");
         commentList.appendChild(li);
     });
 
@@ -139,7 +164,7 @@
             });
 
             peerConnection.onicecandidate = (event) => {
-                console.log("ICE candidate:", event.candidate || "Fin des candidats");
+                console.log("ICE candidate:", event.candidate || "Fin名义 des candidats");
             };
 
             peerConnection.onconnectionstatechange = () => {

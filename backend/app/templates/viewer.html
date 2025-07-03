@@ -1,20 +1,27 @@
 {% extends "base.html" %}
 {% block title %}Interface Spectateur{% endblock %}
 {% block content %}
-<div class="bg-white p-8 rounded shadow-md w-full">
-    <h1 class="text-2xl font-bold mb-4">Interface Spectateur - Session {{ session_id }}</h1>
-    <video id="stream-player" controls class="w-full mb-4"></video>
-    <div id="quiz-section" class="mb-4 hidden">
-        <h2 class="text-xl font-semibold">Quiz</h2>
-        <p id="quiz-question"></p>
-        <div id="quiz-options"></div>
-        <button id="submit-answer" class="bg-green-500 text-white px-4 py-2 rounded">Soumettre</button>
+<div class="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl mx-auto mt-12">
+    <h1 class="text-2xl font-bold mb-6 text-center text-green-800">Interface Spectateur - Session {{ session_id }}</h1>
+    
+    <div class="mb-8">
+        <video id="stream-player" controls class="w-full rounded-lg shadow-md mb-4"></video>
     </div>
-    <div id="comments" class="mb-4">
-        <h2 class="text-xl font-semibold">Commentaires</h2>
-        <ul id="comment-list" class="list-disc pl-5"></ul>
-        <input id="comment-input" type="text" placeholder="Ajouter un commentaire" class="border p-2 w-full mb-2">
-        <button id="post-comment" class="bg-blue-500 text-white px-4 py-2 rounded">Envoyer</button>
+    
+    <div id="quiz-section" class="mb-8 hidden">
+        <h2 class="text-xl font-semibold mb-4 text-green-800">Quiz</h2>
+        <p id="quiz-question" class="text-gray-700 mb-4"></p>
+        <div id="quiz-options" class="flex flex-wrap gap-2"></div>
+        <button id="submit-answer" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg w-full font-medium transition-all duration-200 transform hover:-translate-y-1">Soumettre</button>
+    </div>
+    
+    <div id="comments" class="mb-8">
+        <h2 class="text-xl font-semibold mb-4 text-green-800">Commentaires</h2>
+        <ul id="comment-list" class="list-disc pl-5 space-y-2 text-gray-700"></ul>
+        <div class="mt-4">
+            <input id="comment-input" type="text" class="border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200 mb-2" placeholder="Ajouter un commentaire">
+            <button id="post-comment" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg w-full font-medium transition-all duration-200 transform hover:-translate-y-1">Envoyer</button>
+        </div>
     </div>
 </div>
 
@@ -108,7 +115,7 @@
         data.options.forEach((option, index) => {
             const button = document.createElement("button");
             button.textContent = option;
-            button.classList.add("border", "p-2", "m-1", "bg-gray-200");
+            button.classList.add("border", "border-gray-300", "p-2", "m-1", "bg-gray-100", "rounded-lg", "hover:bg-amber-100", "transition-colors", "duration-200");
             button.onclick = async () => {
                 try {
                     const response = await fetch(`/quiz/${sessionId}/${data.quiz_id}/respond`, {
@@ -141,6 +148,7 @@
         const commentList = document.getElementById("comment-list");
         const li = document.createElement("li");
         li.textContent = `${data.user_name}: ${data.content} (${data.created_at})`;
+        li.classList.add("text-gray-700");
         commentList.appendChild(li);
     });
 
